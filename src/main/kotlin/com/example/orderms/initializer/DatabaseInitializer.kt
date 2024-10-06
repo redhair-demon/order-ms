@@ -22,12 +22,12 @@ class DatabaseInitializer(
         )
         val now = Date().time
         val notes = listOf(
-            Note(text = "expired note 1, 0 sec", expiresAt = Date(), author = users[0]),
-            Note(text = "note 1, 10 sec", expiresAt = Date(now + 10_000), author = users[0]),
-            Note(text = "note 2, 10 min", expiresAt = Date(now + 600_000), author = users[0]),
-            Note(text = "pinned note 1, 10 min", expiresAt = Date(now + 600_000), author = users[0], status = NoteStatus.PINNED),
-            Note(text = "note 3, 2 min", expiresAt = Date(now + 120_000), author = users[1]),
-            Note(text = "note 4, 5 min", expiresAt = Date(now + 300_000), author = users[1]),
+            Note(text = "expired note 1, 0 sec", expiresAt = Date(), author = users[0], id=1),
+            Note(text = "note 1, 10 sec", expiresAt = Date(now + 10_000), author = users[0], id=2),
+            Note(text = "note 2, 10 min", expiresAt = Date(now + 600_000), author = users[0], id=3),
+            Note(text = "pinned note 1, 10 min", expiresAt = Date(now + 600_000), author = users[0], status = NoteStatus.PINNED, id=4),
+            Note(text = "note 3, 2 min", expiresAt = Date(now + 120_000), author = users[1], id=5),
+            Note(text = "note 4, 5 min", expiresAt = Date(now + 300_000), author = users[1], id=6),
         )
         userRepository.saveAllAndFlush(users)
         noteRepository.saveAllAndFlush(notes)
