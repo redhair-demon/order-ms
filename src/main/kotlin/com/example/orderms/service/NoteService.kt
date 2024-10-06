@@ -26,4 +26,5 @@ class NoteService(private val noteRepository: NoteRepository, private val userRe
 
     fun save(note: Note): Note = noteRepository.save(note)
 
+    fun delete(id: Long) = noteRepository.deleteById(id)
 }

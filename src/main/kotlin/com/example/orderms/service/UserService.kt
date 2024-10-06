@@ -11,7 +11,12 @@ class UserService(private val userRepository: UserRepository) {
 
     fun getUserByUsername(username: String): User = userRepository.findById(username).orElseThrow()
 
-    fun createUser(user: User): User = userRepository.save(user)
+    fun createUser(user: User): User {
+        if (userRepository.existsById(user.username)) throw IllegalArgumentException("User already exists")
+        return userRepository.save(user)
+    }
+
+    fun editUser(user: User): User = userRepository.save(user)
 
     fun deleteUser(username: String) = userRepository.deleteById(username)
 

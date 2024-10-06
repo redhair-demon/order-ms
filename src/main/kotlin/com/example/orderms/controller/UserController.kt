@@ -12,7 +12,11 @@ class UserController(private val userService: UserService) {
     fun getAllUsers() = userService.getAllUsers()
 
     @DeleteMapping("/admin/delete")
-    fun deleteUser(@RequestParam username: String) = userService.deleteUser(username)
+    fun deleteUser(@RequestParam username: String): User {
+        val user = getUser(username)
+        userService.deleteUser(username)
+        return user
+    }
 
     @GetMapping
     fun getUser(@RequestParam username: String) = userService.getUserByUsername(username)
@@ -29,7 +33,7 @@ class UserController(private val userService: UserService) {
         val user = getUser(username)
         if (!firstName.isNullOrBlank()) user.firstName = firstName
         if (!lastName.isNullOrBlank()) user.lastName = lastName
-        return createUser(user)
+        return userService.editUser(user)
     }
 
 }

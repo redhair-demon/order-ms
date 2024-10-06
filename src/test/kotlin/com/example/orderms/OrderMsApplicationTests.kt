@@ -143,13 +143,11 @@ class OrderMsApplicationTests {
 
         assertNotNull(result1)
         assertEquals(HttpStatus.OK, result1.statusCode)
-        println(result1.body)
 
         val result2 = restTemplate.postForEntity("/api/note?username=peterparker", Note("test", Date()), ErrorResponse::class.java)
 
         assertNotNull(result2)
         assertEquals(HttpStatus.BAD_REQUEST, result2.statusCode)
-        println(result2.body)
     }
 
     @Test
@@ -157,8 +155,35 @@ class OrderMsApplicationTests {
         val result1 = restTemplate.patchForObject("/api/note/edit?username=jdoe&id=1&text='edited text for note'", null, Note::class.java)
 
         assertNotNull(result1)
-        println(result1)
-//        assertEquals(HttpStatus.OK, result1.statusCode)
+    }
+
+    @Test
+    fun `DELETE note`() {
+        val result = restTemplate.exchange(
+            "/api/note/delete?username=jdoe&id=2",
+            HttpMethod.DELETE,
+            null,
+            Note::class.java
+        )
+
+        assertNotNull(result)
+        assertEquals(HttpStatus.OK, result.statusCode)
+        assertEquals(2L, result.body?.id)
+    }
+
+    @Test
+    fun `Admin GET all notes`() {
+        val result1 = restTemplate.getForEntity("/api/note/admin/all", ErrorResponse::class.java)
+
+        assertNotNull(result1)
+        assertEquals(HttpStatus.UNAUTHORIZED, result1.statusCode)
+
+        val result2 = restTemplate
+            .withBasicAuth("admin", "password")
+            .getForEntity("/api/note/admin/all", List::class.java)
+
+        assertNotNull(result2)
+        assertEquals(HttpStatus.OK, result2.statusCode)
     }
 
 }

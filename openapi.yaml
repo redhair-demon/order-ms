@@ -1,0 +1,546 @@
+openapi: 3.0.3
+info:
+  title: Kotlin REST Api - OpenAPI 3.0
+  contact:
+    email: naegrov@hotmail.com
+  version: 1.0.0
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: localhost:8080/api
+tags:
+  - name: User
+    description: Operations with user
+  - name: Note
+    description: Operations with notes
+  - name: Admin
+    description: Admin operations
+paths:
+  /user:
+    get:
+      tags:
+        - User
+      summary: Get user
+      description: Get user by username
+      operationId: getUser
+      parameters:
+        - name: username
+          in: query
+          description: Username of user you want to get
+          required: true
+          explode: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        - User
+      summary: Add a new user
+      description: Add a new user to database
+      operationId: addUser
+      requestBody:
+        $ref: '#/components/requestBodies/User'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /user/edit:
+    patch:
+      tags: 
+        - User
+      summary: Edit user
+      description: Edit user information. First name / last name
+      operationId: editUser
+      parameters:
+        - name: username
+          in: query
+          description: Username of user you want to edit
+          required: true
+          schema:
+            type: string
+        - name: firstName
+          in: query
+          description: New first name
+          required: false
+          schema:
+            type: string
+        - name: lastName
+          in: query
+          description: New last name
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'  
+  /note:
+    get:
+      tags:
+        - Note
+      summary: Get note by Id
+      description: Get note by Id
+      operationId: getNote
+      parameters:
+        - name: username
+          in: query
+          description: Username of notes author
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: query
+          description: Id of note you want to get
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Note'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Note belongs to another user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Note not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        - Note
+      summary: Add a new note
+      description: Add a new note to user
+      operationId: addNote
+      parameters:
+        - name: username
+          in: query
+          description: Username of notes author
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: '#/components/requestBodies/Note'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /note/user:
+    get:
+      tags:
+        - Note
+      summary: Get notes by user
+      description: Get notes that belongs to user
+      operationId: getNotes
+      parameters:
+        - name: username
+          in: query
+          description: Username of notes author
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/Note'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /note/pin:
+    patch:
+      tags:
+        - Note
+      summary: Pin/unpin note
+      description: Pin/unpin note by id
+      operationId: pinNote
+      parameters:
+        - name: username
+          in: query
+          description: Username of notes author
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: query
+          description: Id of note you want to edit
+          required: true
+          schema:
+            type: integer
+        - name: pinned
+          in: query
+          description: Pin(true) or unpin(false)
+          required: true
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: boolean
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Note belongs to another user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Note not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /note/edit:
+    patch:
+      tags:
+        - Note
+      summary: Edit note
+      description: Edit note by id
+      operationId: editNote
+      parameters:
+        - name: username
+          in: query
+          description: Username of notes author
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: query
+          description: Id of note you want to edit
+          required: true
+          schema:
+            type: integer
+        - name: text
+          in: query
+          description: New text
+          required: false
+          schema:
+            type: string
+        - name: expiresAt
+          in: query
+          description: New expiresAt time
+          required: false
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Note'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Note belongs to another user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Note not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /note/delete:
+    delete:
+      tags:
+        - Note
+      summary: Delete note
+      description: Delete note by id
+      operationId: deleteNote
+      parameters:
+        - name: username
+          in: query
+          description: Username of notes author
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: query
+          description: Id of note you want to edit
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Note'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Note belongs to another user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Note not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                
+  /note/admin/all:
+    get:
+      tags:
+        - Admin
+      security: 
+        - basicAuth: []
+      summary: Get all notes
+      description: Get all notes
+      operationId: getAllNotes
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/Note'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+                
+  /user/admin/all:
+    get:
+      tags:
+        - Admin
+      security: 
+        - basicAuth: []
+      summary: Get all users
+      description: Get all users
+      operationId: getAllUsers
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+                
+  /user/admin/delete:
+    delete:
+      tags:
+        - Admin
+      security: 
+        - basicAuth: []
+      summary: Delete user
+      description: Delete user by username
+      operationId: deleteUser
+      parameters:
+        - name: username
+          in: query
+          description: Username of target user
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Note'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+          example: jdoe
+        firstName:
+          type: string
+          example: John
+        lastName:
+          type: string
+          example: Doe
+        updatedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+    Note:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        text:
+          type: string
+        status:
+          type: string
+          enum:
+            - PINNED
+            - DEFAULT
+            - EXPIRED
+        expiresAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+    ErrorResponse:
+      type: object
+      properties:
+        reason: 
+          type: string
+  requestBodies:
+    User:
+      description: User request body
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+                example: jdoe
+              firstName:
+                type: string
+                example: John
+              lastName:
+                type: string
+                example: Doe
+    Note:
+      description: Note request body
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              text:
+                type: string
+              expiresAt:
+                type: string
+                format: date-time
+  securitySchemes:
+    basicAuth: 
+      type: http
+      scheme: basic

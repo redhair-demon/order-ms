@@ -53,8 +53,21 @@ class NoteController(private val noteService: NoteService) {
     ): Note {
         val note = getNoteById(username, id)
         if (!text.isNullOrBlank()) note.text = text
-        if (expiresAt != null) note.expiresAt = expiresAt
+        if (expiresAt != null) {
+            note.expiresAt = expiresAt
+            if (note.expiresAt < Date()) note.status = NoteStatus.EXPIRED
+        }
         return noteService.save(note)
+    }
+
+    @DeleteMapping("/delete")
+    fun deleteNote(
+        @RequestParam username: String,
+        @RequestParam id: Long
+    ): Note {
+        val note = getNoteById(username, id)
+        noteService.delete(id)
+        return note
     }
 
 }
